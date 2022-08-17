@@ -1,6 +1,11 @@
-PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS questions;
+DROP TABLE IF EXISTS questions_follows;
+DROP TABLE IF EXISTS replies;
+DROP TABLE IF EXISTS questions_likes;
+
+PRAGMA foreign_keys = ON;
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
@@ -8,7 +13,7 @@ CREATE TABLE users (
     lname TEXT NOT NULL
 );
 
-DROP TABLE IF EXISTS questions;
+
 
 CREATE TABLE questions (
     id INTEGER PRIMARY KEY,
@@ -19,7 +24,7 @@ CREATE TABLE questions (
     FOREIGN KEY(author_id) REFERENCES users(id)
 );
 
-DROP TABLE IF EXISTS questions_follows;
+
 
 CREATE TABLE questions_follows (
     id INTEGER PRIMARY KEY,
@@ -30,9 +35,9 @@ CREATE TABLE questions_follows (
     FOREIGN KEY(question_id) REFERENCES questions(id)
 );
 
-DROP TABLE IF EXISTS replies;
 
-CREATE TABLE replies(
+
+CREATE TABLE replies (
     id INTEGER PRIMARY KEY,
     parent_id INTEGER, 
     question_id INTEGER NOT NULL,
@@ -44,9 +49,9 @@ CREATE TABLE replies(
 
 );
 
-DROP TABLE IF EXISTS questions_likes;
 
-CREATE TABLE questions_likes(
+
+CREATE TABLE questions_likes (
     id INTEGER PRIMARY KEY,
     question_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
@@ -73,16 +78,16 @@ VALUES
 
 INSERT INTO questions_follows (user_id, question_id)
 VALUES
-    ((SELECT id FROM users WHERE fname = "Wilson" AND lname = "Chen")),
-    ((SELECT id FROM users WHERE fname ="Ivy" AND lname = "Liu")),
-    ((SELECT id FROM users WHERE fname = "Tommy" AND lname = "Kim")),
-    ((SELECT id FROM users WHERE fname = "Adina" AND lname = "Cooper"));
+    ((SELECT id FROM users WHERE fname = "Wilson" AND lname = "Chen"), (SELECT id FROM questions WHERE title = "age?")),
+    ((SELECT id FROM users WHERE fname ="Ivy" AND lname = "Liu"), (SELECT id FROM questions WHERE title = "sleep?")),
+    ((SELECT id FROM users WHERE fname = "Tommy" AND lname = "Kim"), (SELECT id FROM questions WHERE title = "type fast?")),
+    ((SELECT id FROM users WHERE fname = "Adina" AND lname = "Cooper"), (SELECT id FROM questions WHERE title = "hearts?"));
 
 INSERT INTO replies (parent_id, question_id, user_id, body)
 VALUES
     ( NULL, (SELECT id FROM questions WHERE title = "age?"), (SELECT id FROM users WHERE fname = "Wilson" AND lname = "Chen"), "28" ),
     ( (SELECT id FROM replies WHERE body = "28"), (SELECT id FROM questions WHERE title = "sleep?"), (SELECT id FROM users WHERE fname = "Ivy" AND lname = "Liu"), "Yes"),
-    ( NULL, (SELECT id FROM questions WHERE title = "type fast?"), (SELECT id FROM users WHERE fname = "Tommy" AND lname = "Kim", "No")),
+    ( NULL, (SELECT id FROM questions WHERE title = "type fast?"), (SELECT id FROM users WHERE fname = "Tommy" AND lname = "Kim"), "No"),
     ( (SELECT id FROM replies WHERE body = "No"), (SELECT id FROM questions WHERE title = "hearts?"), (SELECT id FROM users WHERE fname = "Adina" AND lname = "Cooper"), "you suck");
 
 
@@ -91,5 +96,5 @@ VALUES
     ((SELECT id FROM questions WHERE title = "age?"), (SELECT id FROM users WHERE fname = "Wilson" AND lname = "Chen")),
     ((SELECT id FROM questions WHERE title = "sleep?"), (SELECT id FROM users WHERE fname ="Ivy" AND lname = "Liu")),
     ((SELECT id FROM questions WHERE title = "type fast?"), (SELECT id FROM users WHERE fname = "Tommy" AND lname = "Kim")),
-    ((SELECT id FROM questions WHERE title = "hearts?"),(SELECT id FROM users WHERE fname = "Adina" AND lname = "Cooper"));
+    ((SELECT id FROM questions WHERE title = "hearts?"), (SELECT id FROM users WHERE fname = "Adina" AND lname = "Cooper"));
 
